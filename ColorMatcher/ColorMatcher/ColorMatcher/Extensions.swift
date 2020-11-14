@@ -2,7 +2,7 @@
 //  Extensions.swift
 //  ColorMatcher
 //
-//  Created by Ludovic RAULT on 26/09/2020.
+//  Created by Boryana Baeva on 26/09/2020.
 //
 
 import UIKit
