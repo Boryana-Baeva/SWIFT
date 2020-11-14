@@ -1,0 +1,117 @@
+import UIKit
+
+protocol Pet {
+    func feed()
+    func performAllTasks()
+}
+
+protocol Cageable: Pet {
+    func cage()
+}
+
+protocol Tankable: Pet {
+    func tank()
+}
+
+protocol Walkable: Pet {
+    func walk()
+}
+
+protocol Cleanable: Pet {
+    func clean()
+}
+
+struct Dog: Walkable {
+   
+    func feed() {
+        print("Dog was fed.")
+    }
+    
+    func walk() {
+        print("Dog was taken out on a walk.")
+    }
+    
+    func performAllTasks() {
+           feed()
+           walk()
+       }
+    
+}
+
+struct Cat: Walkable {
+
+    func feed() {
+        print("Cat was fed.")
+    }
+    
+    func walk() {
+        print("Cat had some exercise.")
+    }
+    
+    func performAllTasks() {
+        feed()
+        walk()
+    }
+    
+}
+
+struct Fish: Tankable, Cleanable {
+    
+    func feed() {
+        print("Fish was fed.")
+    }
+    
+    func tank() {
+        print("Fish was put in the tank.")
+    }
+    
+    func clean() {
+        print("The fish tank was cleaned.")
+    }
+    
+    func performAllTasks() {
+        feed()
+        clean()
+        tank()
+    }
+}
+
+struct Bird: Cageable, Cleanable {
+    
+    func feed() {
+        print("Bird was fed.")
+    }
+    
+    func cage() {
+        print("Bird was put in the cage.")
+    }
+    
+    func clean() {
+        print("The bird cage has been cleaned.")
+    }
+    
+    func performAllTasks() {
+        feed()
+        clean()
+        cage()
+    }
+}
+
+let dog = Dog()
+let cat = Cat()
+let fish = Fish()
+let bird = Bird()
+
+var fed: [Pet] = [dog, cat, fish, bird]
+var walked: [Walkable] = [dog, cat]
+var tanked: [Tankable] = [fish]
+var caged: [Cageable] = [bird]
+var cleaned: [Cleanable] = [fish, bird]
+
+var petArrays = [fed, walked, tanked, caged, cleaned]
+
+for petArray in petArrays {
+    for pet in petArray {
+        pet.performAllTasks()
+    }
+}
