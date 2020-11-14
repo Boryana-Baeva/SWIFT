@@ -1,0 +1,145 @@
+//:  Suppose you own a retail store. You have food items, clothes and electronics. Begin with an Item protocol:
+/*:
+Fulfill the following requirements using primarily what you’ve learned about protocol-oriented programming. In other words, minimize the code in your classes, structs or enums.
+- Clothes do not have sales tax, but all other items have 7.5% sales tax.
+- When on clearance, food items are discounted 50%, clothes are discounted 25% and electronics are discounted 5%.
+- Items should implement CustomStringConvertible and return name. Food items should also print their expiration dates.
+*/
+
+// Item Protocol & Extensions
+protocol Item: CustomStringConvertible {
+  var name: String { get }
+  var clearance: Bool { get }
+  var msrp: Double { get } // Manufacturer’s Suggested Retail Price
+  var totalPrice: Double { get }
+}
+
+extension Item {
+    var description: String {
+        return "\(name)"
+    }
+}
+
+extension Item where Self: Taxable {
+    var priceAfterTax: Double {
+        let salesTaxPercentage = 7.5
+        return (msrp + (salesTaxPercentage * msrp) / 100).roundPrice()
+    }
+}
+
+extension Item where Self: Taxable, Self: Discountable {
+    var totalPrice: Double {
+        if clearance {
+            return priceAfterDiscount.roundPrice()
+        } else {
+            return priceAfterTax.roundPrice()
+        }
+    }
+}
+
+// Clothing Item Protocol & Extensions
+protocol ClothingItem: Item {
+    var color: String { get }
+    var size: Character { get }
+}
+
+extension ClothingItem where Self: Discountable {
+    var priceAfterDiscount: Double {
+        let discount = 0.25
+        return (msrp - msrp * discount).roundPrice()
+    }
+    var totalPrice: Double {
+        if clearance {
+            return priceAfterDiscount.roundPrice()
+        } else {
+            return msrp.roundPrice()
+        }
+    }
+}
+
+// FoodItem Protocol & Extensions
+protocol FoodItem: Item, Taxable {
+    var expirationDate: String { get }
+}
+
+extension FoodItem where Self: Discountable {
+    var priceAfterDiscount: Double {
+        let discount = 0.5
+        return (priceAfterTax - priceAfterTax * discount).roundPrice()
+    }
+}
+
+extension FoodItem {
+    var description: String {
+        return "\(name) Best before: \(expirationDate)"
+    }
+}
+
+// ElectronicItem Protocol & Extensions
+protocol ElectronicItem: Item, Taxable {
+    var brand: String { get }
+}
+
+extension ElectronicItem where Self: Discountable {
+    var priceAfterDiscount: Double {
+        let discount = 0.05
+        return (priceAfterTax - priceAfterTax * discount).roundPrice()
+    }
+}
+
+
+protocol Taxable {
+    var priceAfterTax: Double { get }
+}
+
+protocol Discountable {
+    var priceAfterDiscount: Double { get }
+}
+
+extension Double {
+    func roundPrice() -> Double {
+        return (self * 100).rounded() / 100
+    }
+}
+
+// Structures
+struct Clothing: ClothingItem, Discountable {
+    var color: String
+    var size: Character
+    var name: String
+    var clearance: Bool
+    var msrp: Double
+}
+
+struct Food: FoodItem, Taxable, Discountable {
+    var name: String
+    var clearance: Bool
+    var msrp: Double
+    var expirationDate: String
+}
+
+struct Electronics: ElectronicItem, Taxable, Discountable {
+    var brand: String
+    var name: String
+    var clearance: Bool
+    var msrp: Double
+}
+
+// Items sold in the retail store
+var blouse = Clothing(color: "white", size: "M", name: "short sleeve blouse", clearance: false, msrp: 25.99)
+var bread = Food(name: "baguette", clearance: true, msrp: 1.25, expirationDate: "21/09/2020")
+var toaster = Electronics(brand: "Philips", name: "4-slice toaster", clearance: false, msrp: 59.50)
+
+blouse.description
+blouse.priceAfterDiscount
+blouse.totalPrice
+
+bread.description
+bread.priceAfterTax
+bread.priceAfterDiscount
+bread.totalPrice
+
+toaster.description
+toaster.priceAfterTax
+toaster.priceAfterDiscount
+toaster.totalPrice
